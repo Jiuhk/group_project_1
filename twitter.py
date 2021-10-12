@@ -1,5 +1,7 @@
 import tweepy
+import sqlite3
 
+'''
 consumer_key = 'N6gSTYL6SNTNqcu0uhcW2qEue'
 consumer_secret = 'vfxvNvk8mvdH1GcFSAmOar5E2RXaiHnB0HGQ8CSg0eIu2mtQBG'
 access_token = '2769979454-VzVkbDRQRjCxjNCuipQ2yaAcSIt6XzdSSaVH2B7'
@@ -11,7 +13,14 @@ auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
 user_name = 'JoeBiden'
-
-
 user = api.get_user(screen_name=user_name)
 print(user.followers_count)
+'''
+
+db_file = r'test.db'
+db = sqlite3.connect(db_file)
+rows = db.execute("SELECT * FROM team_mate;")
+for row in rows:
+    print(row)
+
+db.close()
