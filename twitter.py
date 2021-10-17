@@ -26,11 +26,15 @@ tweets = api.user_timeline(screen_name=user_name,
                            tweet_mode = 'extended')
 
 
+# get Joe Biden's friends
+friends = api.get_friends(screen_name=user_name, count=100)
+
+
 # initialize db
 db_file = r'twitter.db'
 db = sqlite3.connect(db_file)
 c = db.cursor()
-db.set_trace_callback(print)
+# for traceback: db.set_trace_callback(print)
 
 
 # create table 'profile' to store profile if not exists
@@ -54,7 +58,7 @@ insert into profile (name) values ('Karen')
 
 # store Joe Biden's information into profile:
 
-joe_biden = c.execute("SELECT * FROM profile WHERE id = :id;", {'id': user.id})
+joe_biden = c.execute("SELECT * FROM profile WHERE id = ?;", tuple([user.id]))
 if len(c.fetchall()) == 0:     # if joe biden record not exists
 
     c.execute('''INSERT INTO profile
@@ -62,7 +66,7 @@ if len(c.fetchall()) == 0:     # if joe biden record not exists
                 url, description, followers_count,
                 friends_count, statuses_count,
                 created_at)
-                Values (?, ?, ?, ?, ?, ?,
+                VALUES (?, ?, ?, ?, ?, ?,
                 ?, ?, ?, ?);''', (user.screen_name,
                 user.id, user.name, user.location, user.url,
                 user.description, user.followers_count,
@@ -71,6 +75,13 @@ if len(c.fetchall()) == 0:     # if joe biden record not exists
 
 # create table 'following' to store friends of Joe Biden
 
+# store Joe Biden's friends into following
+for friend in friends:
+    friend_test = c.execute("SELECT * FROM following WHERE id = ?;", tuple([friend.id]))
+    if len(c.fetchall()) == 0:     # if friend record not exists
+        c.execute('''INSERT INTO following
+                    (screen_name, id)
+                    VALUES (?, ?)''', (friend.screen_name, friend.id))
 
 
 # create table 'jbTweets' to store all tweets from Joe Biden
