@@ -43,11 +43,24 @@ c.execute('''CREATE TABLE IF NOT EXISTS profile (
             followers_count INTEGER,
             friends_count INTEGER,
             statuses_count INTEGER,
-            creted_at VARCHAR(30)
+            created_at VARCHAR(30)
             );''')
 
 
+# store Joe Biden's information into profile
+c.execute('''INSERT INTO profile
+            (screen_name, id, name, location,
+            url, description, followers_count,
+            friends_count, statuses_count,
+            created_at)
+            Values (?, ?, ?, ?, ?, ?,
+            ?, ?, ?, ?);''', (user.screen_name,
+            user.id, user.name, user.location, user.url,
+            user.description, user.followers_count,
+            user.friends_count, user.statuses_count, user.created_at))
 
+# save all the above changes to db
 db.commit()
 
+# close db
 db.close()
