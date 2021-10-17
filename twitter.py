@@ -21,7 +21,7 @@ user = api.get_user(screen_name=user_name)
 
 # get Joe Biden's tweets 
 tweets = api.user_timeline(screen_name=user_name, 
-                           count=1,
+                           count=10,
                            include_rts = False,
                            tweet_mode = 'extended')
 
@@ -66,6 +66,9 @@ if len(c.fetchall()) == 0:     # if joe biden record not exists
                 user.friends_count, user.statuses_count, user.created_at))
 
 
+# create table 
+
+
 
 # create table jbTweets to store all tweets from Joe Biden
 c.execute('''CREATE TABLE IF NOT EXISTS jbTweets(
@@ -78,7 +81,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS jbTweets(
              );''')
 
 
-# store 
+# export tweets to json
 
 
 # save all the above changes to db
