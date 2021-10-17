@@ -33,7 +33,7 @@ c = db.cursor()
 db.set_trace_callback(print)
 
 
-# create table to store profile if not exists
+# create table 'profile' to store profile if not exists
 # c.execute("DROP TABLE profile")
 c.execute('''CREATE TABLE IF NOT EXISTS profile (
             screen_name VARCHAR(40),
@@ -66,11 +66,13 @@ if len(c.fetchall()) == 0:     # if joe biden record not exists
                 user.friends_count, user.statuses_count, user.created_at))
 
 
-# create table 
+# create table 'following' to store friends of Joe Biden
+c.execute('''CREATE TABLE IF NOT EXISTS following(
+            ''')
 
 
 
-# create table jbTweets to store all tweets from Joe Biden
+# create table 'jbTweets' to store all tweets from Joe Biden
 c.execute('''CREATE TABLE IF NOT EXISTS jbTweets(
              TweetsID INT,
              CreatedAT DATE,
@@ -79,6 +81,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS jbTweets(
              Retweets INT,
              Comments INT
              );''')
+
 
 
 # export tweets to json
