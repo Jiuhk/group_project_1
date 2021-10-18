@@ -20,14 +20,14 @@ user = api.get_user(screen_name=user_name)
 
 
 # get Joe Biden's tweets 
-tweets = api.user_timeline(screen_name=user_name, 
-                           count=20,
+tweets = tweepy.Cursor(api.user_timeline, screen_name=user_name, 
+                           count=200,
                            include_rts = True,
-                           tweet_mode = 'extended')
+                           tweet_mode = 'extended').items()
 
 
 # get Joe Biden's friends
-friends = api.get_friends(screen_name=user_name, count=100)
+# friends = api.get_friends(screen_name=user_name, count=100)
 
 
 # initialize db
@@ -52,9 +52,9 @@ c.execute('''CREATE TABLE IF NOT EXISTS profile (
             created_at VARCHAR(30)
             );''')
 
-c.execute('''
-insert into profile (name) values ('Karen')
-''')
+# c.execute('''
+# insert into profile (name) values ('Karen')
+# ''')
 
 # store Joe Biden's information into profile:
 
@@ -76,40 +76,42 @@ if len(c.fetchall()) == 0:     # if joe biden record not exists
 # create table 'following' to store friends of Joe Biden
 
 # store Joe Biden's friends into following
-for friend in friends:
-    friend_test = c.execute("SELECT * FROM following WHERE id = ?;", tuple([friend.id]))
-    if len(c.fetchall()) == 0:     # if friend record not exists
-        c.execute('''INSERT INTO following
-                    (screen_name, id)
-                    VALUES (?, ?)''', (friend.screen_name, friend.id))
+# for friend in friends:
+#     friend_test = c.execute("SELECT * FROM following")
+#     if len(c.fetchall()) == 0:     # if friend record not exists
+#         c.execute('''INSERT INTO Profile
+#                     (screen_name, id)
+#                     VALUES (?, ?)''', (friend.screen_name, friend.id))
 
 
 # create table 'jbTweets' to store all tweets from Joe Biden
-c.execute('''CREATE TABLE IF NOT EXISTS jbTweets(
-             TweetsID INT,
-             CreatedAT DATE,
-             FullText TEXT,
-             Likes INT,
-             Retweets INT,
-             Comments INT
-             );''')
+# c.execute('''CREATE TABLE IF NOT EXISTS jbTweets(
+#              id INT,
+#              created_at DATE,
+#              full_text TEXT,
+#              favorite_count INT,
+#              retweet_count INT
+#              );''')
 
 
 
 # export tweets to json
 from collections import defaultdict
 l = defaultdict(list)
-print(len(tweets))
 elms = ['id', 'full_text', 'created_at', 'favorite_count', 'retweet_count']
+
+# created_at needs to be converted to -> datetime64
 for post in tweets:
     for elm in elms:
         l[elm].append(post._json[elm])
+        
     
 
 import pandas as pd
 df = pd.DataFrame(l)
 pd.set_option('max_columns', None)
 print(df)
+df.to_sql('jbTweets', db, if_exists="replace", index=False)
 db.commit()
 
 db.close()
